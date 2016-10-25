@@ -1,0 +1,2 @@
+JIRA_API_URL = ''
+BITBUCKET_API_URL = ''
