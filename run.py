@@ -111,10 +111,10 @@ for commit in commits:
         continue
 
     if valid:
-        release_commits.append(commit['displayId'])
-
+        release_commits.append(commit['id'])
 
 release_commits = list(reversed(release_commits))
+subprocess.call(['git', 'fetch'])
 subprocess.call(['git', 'checkout', 'master'])
 subprocess.call(['git', 'pull', 'origin', 'master'])
 branch = 'release/' + version['name']
