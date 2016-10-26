@@ -1,6 +1,7 @@
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 from base64 import b64encode
+import math
 
 
 class bcolors:
@@ -29,6 +30,62 @@ def input_req(question):
             break
 
     return text
+
+
+def input_list(questions):
+    i = 1
+    for question in questions:
+        print(str(i) + ') ' + question)
+        i += 1
+    print('0) Exit')
+
+    while True:
+        answer = int(input_req('Enter number: '))
+        if answer == 0:
+            exit()
+
+        if len(questions) > answer > 0:
+            break
+
+    return answer
+
+
+def print_table(data):
+    rows_width = []
+    for row in data:
+        if len(rows_width) == 0:
+            rows_width = [0] * len(row)
+
+        for i, text in enumerate(row):
+            text = str(text)
+            if len(text) > 100:
+                text = text[:100]
+
+            text_length = len(text) + 6
+            if rows_width[i] < text_length:
+                rows_width[i] = text_length
+
+    total_width = sum(rows_width) + len(rows_width) + 1
+    print('-' * total_width)
+
+    for row in data:
+        row_text = '|'
+        for i, text in enumerate(row):
+            text = str(text)
+            if len(text) > 100:
+                text = text[:100]
+
+            empty_space = rows_width[i] - len(text)
+            lspace = math.floor(empty_space / 2)
+            rspace = math.ceil(empty_space / 2)
+
+            row_text += ' ' * lspace
+            row_text += text
+            row_text += ' ' * rspace
+            row_text += '|'
+
+        print(row_text)
+        print('-' * total_width)
 
 
 def make_http_request(url, data=None, headers=None):
