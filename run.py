@@ -101,5 +101,5 @@ subprocess.call(['git', 'pull', 'origin', 'master'])
 branch = 'release/' + version['name']
 subprocess.call(['git', 'branch', '-D', branch])
 subprocess.call(['git', 'checkout', '-b', branch])
-release_commits = reversed(commits_manager.get_release_commits_ids())
-subprocess.call(['git', 'cherry-pick', '--ff'] + commits_manager.get_release_commits_ids())
+release_commits = list(reversed(commits_manager.get_release_commits_ids()))
+subprocess.call(['git', 'cherry-pick', '--ff'] + release_commits)
