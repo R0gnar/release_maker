@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import getpass
 import subprocess
 from tools import *
@@ -92,7 +92,7 @@ while True:
     elif answer == 3:
         commit_id = input_req('Enter commit id:')
         commits_manager.add_disable_commit(commit_id)
-    if answer == 4:
+    elif answer == 4:
         break
 
 subprocess.call(['git', 'fetch'])
@@ -101,4 +101,5 @@ subprocess.call(['git', 'pull', 'origin', 'master'])
 branch = 'release/' + version['name']
 subprocess.call(['git', 'branch', '-D', branch])
 subprocess.call(['git', 'checkout', '-b', branch])
+release_commits = reversed(commits_manager.get_release_commits_ids())
 subprocess.call(['git', 'cherry-pick', '--ff'] + commits_manager.get_release_commits_ids())

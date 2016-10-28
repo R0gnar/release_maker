@@ -1,7 +1,7 @@
+import math
 from urllib.request import Request, urlopen
 from urllib.error import URLError
 from base64 import b64encode
-import math
 
 
 class bcolors:
@@ -44,7 +44,7 @@ def input_list(questions):
         if answer == 0:
             exit()
 
-        if len(questions) > answer > 0:
+        if len(questions) >= answer > 0:
             break
 
     return answer

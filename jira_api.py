@@ -1,8 +1,8 @@
-from tools import *
 import json
 from json.decoder import JSONDecodeError
 from urllib.parse import urlencode
 from settings import JIRA_API_URL
+from tools import *
 
 
 class JiraApi:
