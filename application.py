@@ -163,6 +163,7 @@ class Application:
             project = projects[answer - 1]
 
         self.bb_project = project
+        self.repo = None
 
     def select_bitbucket_repo(self):
         if not self.bb_project:
@@ -212,6 +213,10 @@ class Application:
         self.fix_version = version
 
     def make_release_branch(self):
+        if not self.project or not self.bb_project or not self.repo:
+            print(styled('Select jira project, bitbucket project and bitbucket repostiory', bcolors.ERROR))
+            return
+
         self.select_fix_version()
         commits_controller = CommitsController(
             self.jira_api, self.bitbucket_api, self.project,
@@ -220,6 +225,10 @@ class Application:
         commits_controller.run()
 
     def modify_current_branch(self):
+        if not self.project or not self.bb_project or not self.repo:
+            print(styled('Select jira project, bitbucket project and bitbucket repostiory', bcolors.ERROR))
+            return
+
         commits_controller = CommitsController(
             self.jira_api, self.bitbucket_api,
             self.project, self.repo
@@ -238,15 +247,32 @@ class CommitsController:
         self.jira_api = jira_api
         self.bitbucket_api = bitbucket_api
         self.commits_manager = CommitsManager()
-        self.commits_manager.set_commits(self.get_commits())
+        self.fix_version = fix_version
+        self.branch_from = None
+        self.branch_to = None
 
+    def run(self):
         if self.fix_version:
             self.commits_manager.set_issues(self.get_fix_version_issues())
+            self.branch_from = 'qa'
+            self.branch_to = 'master'
+        else:
+            self.branch_from = input_req('Enter source branch: ')
+            self.branch_to = input_req('Enter destination branch: ')
+
+        self.commits_manager.set_commits(self.get_commits())
+
+        while True:
+            menu = self.get_menu()
+            answer = self.show_menu(menu)
+            result = menu[answer]['command']()
+            if result is False:
+                break
 
     def get_commits(self):
         params = {
-            'until': 'qa',
-            'since': 'master',
+            'until': self.branch_from,
+            'since': self.branch_to,
             'merges': 'exclude',
             'limit': 10000
         }
@@ -273,14 +299,6 @@ class CommitsController:
             return False
 
         return issues
-
-    def run(self):
-        while True:
-            menu = self.get_menu()
-            answer = self.show_menu(menu)
-            result = menu[answer]['command']()
-            if result is False:
-                break
 
     def get_menu(self):
         menu = list()
