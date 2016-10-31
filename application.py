@@ -72,7 +72,7 @@ class Application:
         })
 
         if self.bb_project:
-            title = 'Change bitbucket project [' + self.project['key'] + ']'
+            title = 'Change bitbucket project [' + self.bb_project['key'] + ']'
         else:
             title = 'Select bitbucket project'
         menu.append({
