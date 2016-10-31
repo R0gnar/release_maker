@@ -18,33 +18,50 @@ class BitbucketApi:
     def get_projects(self):
         url = BITBUCKET_API_URL + 'projects?limit=1000'
         result = make_http_request(url, headers=self.get_headers())
+        if not result:
+            raise BitbucketConnectionError
+
         try:
             data = json.loads(result)
-            return data['values']
-        except JSONDecodeError:
-            return []
-        except KeyError:
-            return []
+            projects = data['values']
+        except (JSONDecodeError, KeyError):
+            raise BitbucketError
+        else:
+            return projects
 
     def get_project_repos(self, project):
         url = BITBUCKET_API_URL + 'projects/' + project + '/repos?limit=1000'
         result = make_http_request(url, headers=self.get_headers())
+        if not result:
+            raise BitbucketConnectionError
+
         try:
             data = json.loads(result)
-            return data['values']
-        except JSONDecodeError:
-            return []
-        except KeyError:
-            return []
+            repositories = data['values']
+        except (JSONDecodeError, KeyError):
+            raise BitbucketError
+        else:
+            return repositories
 
     def get_commits(self, project, repo, params):
         query = urlencode(params)
         url = BITBUCKET_API_URL + 'projects/' + project + '/repos/' + repo + '/commits?' + query
         result = make_http_request(url, headers=self.get_headers())
+        if not result:
+            raise BitbucketConnectionError
+
         try:
             data = json.loads(result)
-            return data['values']
-        except JSONDecodeError:
-            return []
-        except KeyError:
-            return []
+            commits = data['values']
+        except (JSONDecodeError, KeyError):
+            raise BitbucketError
+        else:
+            return commits
+
+
+class BitbucketError(Exception):
+    pass
+
+
+class BitbucketConnectionError(BitbucketError):
+    pass
