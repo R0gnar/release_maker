@@ -54,7 +54,8 @@ class JiraApi:
     def get_issues(self, jql):
         url = JIRA_API_URL + 'search'
         query = urlencode({
-            'jql': jql
+            'jql': jql,
+            'maxResults': 100000
         })
 
         result = make_http_request(url + '?' + query, headers=self.get_headers())
