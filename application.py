@@ -1,7 +1,7 @@
 import getpass
 import subprocess
 import settings
-from tools import *
+from tools import bcolors, styled, input_list, input_req, print_table
 from jira_api import JiraApi, JiraConnectionError, JiraError
 from bitbucket_api import BitbucketApi, BitbucketConnectionError, BitbucketError
 from commits_manager import CommitsManager
@@ -220,7 +220,7 @@ class Application:
         self.select_fix_version()
         commits_controller = CommitsController(
             self.jira_api, self.bitbucket_api, self.project,
-            self.repo, self.fix_version
+            self.bb_project, self.repo, self.fix_version
         )
         commits_controller.run()
 
@@ -231,7 +231,7 @@ class Application:
 
         commits_controller = CommitsController(
             self.jira_api, self.bitbucket_api,
-            self.project, self.repo
+            self.bb_project, self.project, self.repo
         )
         commits_controller.run()
 
@@ -240,8 +240,9 @@ class Application:
 
 
 class CommitsController:
-    def __init__(self, jira_api, bitbucket_api, project, repo, fix_version=None):
+    def __init__(self, jira_api, bitbucket_api, project, bb_project, repo, fix_version=None):
         self.project = project
+        self.bb_project = bb_project
         self.repo = repo
         self.fix_version = fix_version
         self.jira_api = jira_api
@@ -277,7 +278,7 @@ class CommitsController:
             'limit': 10000
         }
         try:
-            commits = self.bitbucket_api.get_commits(self.project['key'], self.repo['slug'], params)
+            commits = self.bitbucket_api.get_commits(self.bb_project['key'], self.repo['slug'], params)
         except BitbucketConnectionError:
             exit(styled('Bitbucket connection failed', bcolors.ERROR))
             return False
